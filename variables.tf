@@ -3,7 +3,13 @@ variable "databricks-cluster-name" {
     description = "Provide the Given Databricks Cluster Name: "
 }
 
-variable "resource-group-name" {
+variable "west-us-resource-group-name" {
+    type = string
+    description = "Provide the Given Resource Group Name: "
+  
+}
+
+variable "west-us-2-resource-group-name" {
     type = string
     description = "Provide the Given Resource Group Name: "
   
@@ -24,5 +30,17 @@ variable "storage-account-name" {
 variable "blob-contianer-name" {
     type = string
     description = "Provide the Storage Blob Container Name: "
+  
+}
+
+variable "databricks-workspace-name-west-us" {
+    type = string
+    description = "Provide the Databricks Workspace Name for West US Region: "
+  
+}
+
+variable "databricks-workspace-name-west-us-2" {
+    type = string
+    description = "Provide the Databricks Workspace Name for West US 2 Region: "
   
 }
