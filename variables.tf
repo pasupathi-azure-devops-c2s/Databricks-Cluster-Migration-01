@@ -44,3 +44,8 @@ variable "databricks-workspace-name-west-us-2" {
     description = "Provide the Databricks Workspace Name for West US 2 Region: "
   
 }
+variable "databricks-subent-cidr" {
+    type = string
+    description = "Provide the Given Subnet 1 CIDR Range: "
+  
+}

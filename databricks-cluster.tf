@@ -11,9 +11,12 @@ resource "azurerm_databricks_workspace" "databricks-workspace-west-us" {
     location = azurerm_resource_group.west-us-databricks-rg.location
     sku = "Standard"
 
+    network_security_group_rules_required = azurerm_network_security_group.databricks-nsg.id
+
     tags = {
       Environment = "Production"
     }
   
 }
+
 
