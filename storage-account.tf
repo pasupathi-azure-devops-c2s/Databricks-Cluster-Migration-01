@@ -1,4 +1,4 @@
-resource "azurerm_storage_account" "databricks-storage-account" {
+/*resource "azurerm_storage_account" "databricks-storage-account" {
     name = var.storage-account-name
     resource_group_name = azurerm_resource_group.west-us-databricks-rg.name
     location = azurerm_resource_group.west-us-databricks-rg.location
@@ -13,3 +13,4 @@ resource "azurerm_storage_container" "databricks-blob" {
     container_access_type = "private"
   
 }
+*/
