@@ -9,5 +9,7 @@ resource "azurerm_databricks_workspace" "west-us-2-workspace" {
     location = azurerm_resource_group.west-us-2-rg.location
     resource_group_name = azurerm_resource_group.west-us-2-rg.name
     sku = "standard"
+
+    network_security_group_rules_required = azurerm_network_security_group.west-us-2-nsg.id
   
 }
