@@ -1,7 +1,3 @@
-Certainly! Below is a professionally formatted version of your README content:
-
----
-
 # Databricks Cluster Migration
 
 This repository provides the necessary files to automate the migration of Databricks clusters from a workspace in the "West US" region to a workspace in the "West US 2" region. It includes two main components: 
@@ -98,7 +94,3 @@ Ensure that the Python scripts can access these values from the Key Vault for se
 
 - If you encounter issues with cluster creation, verify the cluster configurations in the JSON file and ensure that the cluster IDs are correct.
 - If Terraform fails to apply the changes, check the logs for any missing or invalid configurations, and make sure your Azure credentials are correctly set up.
-
----
-
-By following these steps, you should be able to migrate Databricks clusters from one region to another using this automated process.
