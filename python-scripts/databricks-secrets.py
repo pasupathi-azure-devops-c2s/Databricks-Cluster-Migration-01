@@ -15,13 +15,13 @@ if not all([azure_tenant_id, azure_client_id, azure_client_secret]):
 azure_credentials = ClientSecretCredential(azure_tenant_id, azure_client_id, azure_client_secret)
 
 # Define Key Vault URL
-key_vault_url = "https://Cloud-Secret-vault-02.vault.azure.net/"
+key_vault_url = "https://Pasupathikumar.vault.azure.net/"
 
 # Initialize the SecretClient
 client = SecretClient(vault_url=key_vault_url, credential=azure_credentials)
 
 # Specify the name of the secret you want to retrieve
-secret_name = "VM-Password"
+secret_name = "Common-Password"
 
 try:
     # Get the secret from the Key Vault
