@@ -1,6 +1,7 @@
 import json
 import requests
 import time
+from files_folders_migrate import migrate_all_folders
 
 # West US Workspace and Cluster details (Source Workspace and Cluster Details)
 west_us_workspace_url = "<West-US-Workspace-URL>"
@@ -10,6 +11,8 @@ west_us_cluster_id = "<Databricks-Cluster-ID>"
 # West US 2 Workspace details (Destination Workspace details)
 west_us_2_workspace_url = "<West-US-2-Workspace-URL>"
 west_us_2_workspace_token = "<West-US-2-Workspace-Developer-Access-Token>"
+
+migrate_all_folders(west_us_workspace_url, west_us_workspace_token, west_us_2_workspace_url, west_us_2_workspace_token)
 
 west_us_cluster_url = f"{west_us_workspace_url}/api/2.0/clusters/get"
 

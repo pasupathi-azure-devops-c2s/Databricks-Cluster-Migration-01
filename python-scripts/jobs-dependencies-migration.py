@@ -1,122 +1,87 @@
-import json
 import requests
-import time
+import json
 
-# West US Workspace and Cluster details (Source Workspace and Cluster Details)
+
+# West US and West US 2 Workspace Details
 west_us_workspace_url = "<West-US-Workspace-URL>"
 west_us_workspace_token = "<West-US-Workspace-Developer-Access-Token>"
-west_us_cluster_id = "<Databricks-Cluster-ID>"
-
-# West US 2 Workspace details (Destination Workspace details)
 west_us_2_workspace_url = "<West-US-2-Workspace-URL>"
 west_us_2_workspace_token = "<West-US-2-Workspace-Developer-Access-Token>"
 
-# Cluster details URL for West US Workspace
-west_us_cluster_url = f"{west_us_workspace_url}/api/2.0/clusters/get"
+# Function to migrate notebooks from West US to West US 2
+def migrate_notebooks():
+    # List notebooks in West US
+    notebooks_url = f"{west_us_workspace_url}/api/2.0/workspace/list"
+    west_us_header = {"Authorization": f"Bearer {west_us_workspace_token}"}
+    notebooks_response = requests.get(notebooks_url, headers=west_us_header)
 
-west_us_header = {
-    "Authorization": f"Bearer {west_us_workspace_token}"
-}
+    if notebooks_response.status_code == 200:
+        notebooks_data = notebooks_response.json()
 
-# Get cluster details from the West US workspace
-west_us_response = requests.get(west_us_cluster_url, headers=west_us_header, json={"cluster_id": west_us_cluster_id})
+        for notebook in notebooks_data.get("files", []):
+            notebook_path = notebook["path"]
+            # Export notebook from West US workspace
+            export_url = f"{west_us_workspace_url}/api/2.0/workspace/export"
+            export_params = {"path": notebook_path, "format": "SOURCE"}
+            export_response = requests.get(export_url, headers=west_us_header, params=export_params)
 
-if west_us_response.status_code == 200:
-    cluster_data = west_us_response.json()
-    cluster_config = {
-        "cluster_name": cluster_data.get("cluster_name"),
-        "spark_version": cluster_data.get("spark_version"),
-        "node_type_id": cluster_data.get("node_type_id"),
-        "num_workers": cluster_data.get("num_workers"),
-        "autotermination_minutes": cluster_data.get("autotermination_minutes"),
-        "driver_node_type_id": cluster_data.get("driver_node_type_id"),
-        "enable_elastic_disk": cluster_data.get("enable_elastic_disk"),
-        "autoscale": cluster_data.get("autoscale")
-    }
+            if export_response.status_code == 200:
+                notebook_content = export_response.text
+                # Import notebook into West US 2 workspace
+                import_url = f"{west_us_2_workspace_url}/api/2.0/workspace/import"
+                import_params = {
+                    "path": notebook_path,
+                    "format": "SOURCE",  # Could be SOURCE or JUPYTER depending on your need
+                    "overwrite": "true"
+                }
+                import_response = requests.post(import_url, headers={"Authorization": f"Bearer {west_us_2_workspace_token}"}, params=import_params, data=notebook_content)
 
-    # Create the cluster in the West US 2 workspace
-    west_us_2_header = {
-        "Authorization": f"Bearer {west_us_2_workspace_token}",
-        "Content-Type": "application/json"
-    }
-
-    create_cluster_url = f"{west_us_2_workspace_url}/api/2.0/clusters/create"
-    create_response = requests.post(create_cluster_url, headers=west_us_2_header, json=cluster_config)
-
-    if create_response.status_code == 200:
-        print("Cluster created successfully in West US 2 workspace!")
-
-        # Wait for the cluster to be running before installing libraries or running jobs
-        cluster_id = create_response.json().get("cluster_id")
-
-        # Wait for the cluster to be in a running state
-        while True:
-            cluster_status_url = f"{west_us_2_workspace_url}/api/2.0/clusters/get?cluster_id={cluster_id}"
-            cluster_status_response = requests.get(cluster_status_url, headers=west_us_2_header)
-
-            if cluster_status_response.status_code == 200:
-                cluster_status_data = cluster_status_response.json()
-                state = cluster_status_data.get("state")
-
-                if state == "RUNNING":
-                    print("Cluster is running.")
-                    break
+                if import_response.status_code == 200:
+                    print(f"Notebook {notebook_path} successfully migrated to West US 2.")
                 else:
-                    print(f"Cluster is in {state} state. Waiting for it to be running...")
+                    print(f"Failed to import notebook {notebook_path} to West US 2.")
             else:
-                print(f"Failed to fetch cluster status: {cluster_status_response.text}")
-                break
-
-            time.sleep(30)  # Wait for 30 seconds before checking again
-
-        # Step 1: Install libraries on the cluster
-        install_libraries_url = f"{west_us_2_workspace_url}/api/2.0/libraries/install"
-        libraries = [
-            {
-                "pypi": {
-                    "package": "pandas",
-                    "repo": "https://pypi.org/simple/"
-                }
-            },
-            {
-                "pypi": {
-                    "package": "numpy",
-                    "repo": "https://pypi.org/simple/"
-                }
-            }
-            # Add more libraries as required
-        ]
-
-        install_libraries_payload = {
-            "cluster_id": cluster_id,
-            "libraries": libraries
-        }
-
-        install_libraries_response = requests.post(install_libraries_url, headers=west_us_2_header, json=install_libraries_payload)
-
-        if install_libraries_response.status_code == 200:
-            print("Libraries installed successfully.")
-        else:
-            print(f"Failed to install libraries: {install_libraries_response.text}")
-
-        # Step 2: Run jobs on the cluster
-        job_payload = {
-            "run_name": "Example Job",
-            "existing_cluster_id": cluster_id,
-            "notebook_task": {
-                "notebook_path": "/Users/<your_username>/example_notebook"  # Replace with your notebook path
-            }
-        }
-
-        run_job_url = f"{west_us_2_workspace_url}/api/2.0/jobs/runs/submit"
-        run_job_response = requests.post(run_job_url, headers=west_us_2_header, json=job_payload)
-
-        if run_job_response.status_code == 200:
-            print("Job submitted successfully.")
-        else:
-            print(f"Failed to submit job: {run_job_response.text}")
-
+                print(f"Failed to export notebook {notebook_path} from West US.")
     else:
-        print(f"Failed to create cluster in West US 2: {create_response.text}")
-else:
-    print(f"Failed to fetch cluster details from West US workspace: {west_us_response.text}")
+        print("Failed to retrieve notebooks from West US.")
+
+# Function to migrate jobs from West US to West US 2
+def migrate_jobs():
+    jobs_url = f"{west_us_workspace_url}/api/2.0/jobs/list"
+    jobs_response = requests.get(jobs_url, headers={"Authorization": f"Bearer {west_us_workspace_token}"})
+
+    if jobs_response.status_code == 200:
+        jobs_data = jobs_response.json()
+
+        for job in jobs_data.get("jobs", []):
+            job_id = job["job_id"]
+            job_settings_url = f"{west_us_workspace_url}/api/2.0/jobs/get?job_id={job_id}"
+            job_settings_response = requests.get(job_settings_url, headers={"Authorization": f"Bearer {west_us_workspace_token}"})
+
+            if job_settings_response.status_code == 200:
+                job_settings = job_settings_response.json()
+                
+                # Create job in West US 2 using the same configuration
+                job_payload = {
+                    "run_name": job_settings["settings"]["name"],  # Job name
+                    "existing_cluster_id": "<West-US-2-Cluster-ID>",  # Use the West US 2 cluster ID
+                    "notebook_task": job_settings["settings"].get("notebook_task", {}),
+                    "spark_jar_task": job_settings["settings"].get("spark_jar_task", {}),
+                    "spark_python_task": job_settings["settings"].get("spark_python_task", {})
+                }
+
+                run_job_url = f"{west_us_2_workspace_url}/api/2.0/jobs/runs/submit"
+                run_job_response = requests.post(run_job_url, headers={"Authorization": f"Bearer {west_us_2_workspace_token}"}, json=job_payload)
+
+                if run_job_response.status_code == 200:
+                    print(f"Job {job_settings['settings']['name']} successfully migrated to West US 2.")
+                else:
+                    print(f"Failed to submit job {job_settings['settings']['name']} to West US 2.")
+            else:
+                print(f"Failed to get job {job_id} details from West US.")
+    else:
+        print("Failed to retrieve jobs from West US.")
+
+# Run the migration functions
+migrate_notebooks()
+migrate_jobs()
