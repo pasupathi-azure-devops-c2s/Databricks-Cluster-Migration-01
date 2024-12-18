@@ -1,0 +1,5 @@
+PS C:\Users\PasupathiKumarS\OneDrive - C2S Technologies Inc\Desktop\DevOps\terraform_codes\Databricks-Cluster-Migration-01> & C:/Users/PasupathiKumarS/AppData/Local/Microsoft/WindowsApps/python3.11.exe -m venv databricks_venv
+
+databricks_venv\Scripts\activate
+
+pip install -r .\requirements.txt

@@ -7,6 +7,8 @@ azure_tenant_id = os.getenv("ARM_TENANT_ID")
 azure_client_id = os.getenv("ARM_CLIENT_ID")
 azure_client_secret = os.getenv("ARM_CLIENT_SECRET")
 
+key_vault_name = "Databricks-vault-01"
+
 # Check if the environment variables are correctly set
 if not all([azure_tenant_id, azure_client_id, azure_client_secret]):
     raise ValueError("One or more environment variables (ARM_TENANT_ID, ARM_CLIENT_ID, ARM_CLIENT_SECRET) are missing.")
@@ -15,7 +17,7 @@ if not all([azure_tenant_id, azure_client_id, azure_client_secret]):
 azure_credentials = ClientSecretCredential(azure_tenant_id, azure_client_id, azure_client_secret)
 
 # Define Key Vault URL
-key_vault_url = "https://Pasupathikumar.vault.azure.net/"
+key_vault_url = f"https://{key_vault_name}.vault.azure.net/"
 
 # Initialize the SecretClient
 client = SecretClient(vault_url=key_vault_url, credential=azure_credentials)
