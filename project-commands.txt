@@ -3,3 +3,8 @@ PS C:\Users\PasupathiKumarS\OneDrive - C2S Technologies Inc\Desktop\DevOps\terra
 databricks_venv\Scripts\activate
 
 pip install -r .\requirements.txt
+
+
+azure resource mover 
+    function apps
+    azure resources (west us - west us 2)
