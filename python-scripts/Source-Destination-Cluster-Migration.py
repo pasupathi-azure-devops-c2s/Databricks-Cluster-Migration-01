@@ -12,7 +12,6 @@ west_us_cluster_id = "<Databricks-Cluster-ID>"
 west_us_2_workspace_url = "<West-US-2-Workspace-URL>"
 west_us_2_workspace_token = "<West-US-2-Workspace-Developer-Access-Token>"
 
-migrate_all_folders(west_us_workspace_url, west_us_workspace_token, west_us_2_workspace_url, west_us_2_workspace_token)
 
 west_us_cluster_url = f"{west_us_workspace_url}/api/2.0/clusters/get"
 
@@ -46,6 +45,7 @@ if west_us_response.status_code == 200:
 
     if create_response.status_code == 200:
         print("Cluster created successfully in West US 2 workspace!")
+        migrate_all_folders(west_us_workspace_url, west_us_workspace_token, west_us_2_workspace_url, west_us_2_workspace_token)
     else:
         print(f"Failed to create cluster in West US 2: {create_response.text}")
 else:
