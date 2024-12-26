@@ -1,0 +1,7 @@
+west-us-workspace
+| - Repository 1
+| - - notebook 1.1
+| - - notebook 1.2
+| - Repository 2
+| - - notebook 2.1
+| - - notebook 2.2
