@@ -2,13 +2,9 @@ import requests
 import json
 from blob_file_creation import blob_file_creation
 
-# Set your Databricks instance URL and personal access token
-DATABRICKS_INSTANCE_URL = "https://<your-databricks-instance>.azuredatabricks.net"  # Replace with your Databricks URL
-DATABRICKS_TOKEN = "<your-databricks-token>"  # Replace with your personal access token
 
 
-def list_workspace_files(path, Databricks_token, databricks_instance_url):
-    workspace_path = "/Workspace"  # Starting folder in Databricks Workspace
+def list_workspace_files(path, Databricks_token, databricks_instance_url, account_url, sas_token, container_name, blob_name):
     headers = {
         "Authorization": f"Bearer {Databricks_token}"
     }
@@ -29,7 +25,7 @@ def list_workspace_files(path, Databricks_token, databricks_instance_url):
                 list_workspace_files(item['path'])  
             else:
                 print(f"File: {item['path']}")
-                blob_file_creation(item['path'])
+                blob_file_creation(account_url, sas_token, container_name, blob_name, item['path'])
     else:
         print(f"Error: {response.status_code} - {response.text}")
 

@@ -1,12 +1,15 @@
 import json
 import requests
 import time
-from files_folders_migrate import migrate_all_folders
+from databricks_workspace_file_collection import list_workspace_files
+
 
 # West US Workspace and Cluster details (Source Workspace and Cluster Details)
 west_us_workspace_url = "<West-US-Workspace-URL>"
 west_us_workspace_token = "<West-US-Workspace-Developer-Access-Token>"
 west_us_cluster_id = "<Databricks-Cluster-ID>"
+
+
 
 # West US 2 Workspace details (Destination Workspace details)
 west_us_2_workspace_url = "<West-US-2-Workspace-URL>"
@@ -14,6 +17,17 @@ west_us_2_workspace_token = "<West-US-2-Workspace-Developer-Access-Token>"
 
 
 west_us_cluster_url = f"{west_us_workspace_url}/api/2.0/clusters/get"
+workspace_path = "/Workspace"
+
+account_url = "<storage-account-url>" 
+sas_token = "<blob-sas-token>"
+
+
+
+container_name = "<container-name>"  
+blob_name = "<blob-name>"     
+file_path = "<file-path>"  
+
 
 west_us_header = {
     "Authorization": f"Bearer {west_us_workspace_token}"
@@ -45,7 +59,7 @@ if west_us_response.status_code == 200:
 
     if create_response.status_code == 200:
         print("Cluster created successfully in West US 2 workspace!")
-        migrate_all_folders(west_us_workspace_url, west_us_workspace_token, west_us_2_workspace_url, west_us_2_workspace_token)
+        list_workspace_files(workspace_path, west_us_2_workspace_url, west_us_2_workspace_token, account_url, sas_token, container_name, blob_name)
     else:
         print(f"Failed to create cluster in West US 2: {create_response.text}")
 else:
