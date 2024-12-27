@@ -8,9 +8,7 @@ west_us_workspace_token = "<West-US-Workspace-Developer-Access-Token>"
 west_us_2_workspace_url = "<West-US-2-Workspace-URL>"
 west_us_2_workspace_token = "<West-US-2-Workspace-Developer-Access-Token>"
 
-# Function to migrate notebooks from West US to West US 2
 def migrate_notebooks():
-    # List notebooks in West US
     notebooks_url = f"{west_us_workspace_url}/api/2.0/workspace/list"
     west_us_header = {"Authorization": f"Bearer {west_us_workspace_token}"}
     notebooks_response = requests.get(notebooks_url, headers=west_us_header)
@@ -20,14 +18,14 @@ def migrate_notebooks():
 
         for notebook in notebooks_data.get("files", []):
             notebook_path = notebook["path"]
-            # Export notebook from West US workspace
+   
             export_url = f"{west_us_workspace_url}/api/2.0/workspace/export"
             export_params = {"path": notebook_path, "format": "SOURCE"}
             export_response = requests.get(export_url, headers=west_us_header, params=export_params)
 
             if export_response.status_code == 200:
                 notebook_content = export_response.text
-                # Import notebook into West US 2 workspace
+   
                 import_url = f"{west_us_2_workspace_url}/api/2.0/workspace/import"
                 import_params = {
                     "path": notebook_path,
@@ -45,7 +43,6 @@ def migrate_notebooks():
     else:
         print("Failed to retrieve notebooks from West US.")
 
-# Function to migrate jobs from West US to West US 2
 def migrate_jobs():
     jobs_url = f"{west_us_workspace_url}/api/2.0/jobs/list"
     jobs_response = requests.get(jobs_url, headers={"Authorization": f"Bearer {west_us_workspace_token}"})
@@ -61,7 +58,6 @@ def migrate_jobs():
             if job_settings_response.status_code == 200:
                 job_settings = job_settings_response.json()
                 
-                # Create job in West US 2 using the same configuration
                 job_payload = {
                     "run_name": job_settings["settings"]["name"],  # Job name
                     "existing_cluster_id": "<West-US-2-Cluster-ID>",  # Use the West US 2 cluster ID
@@ -82,6 +78,5 @@ def migrate_jobs():
     else:
         print("Failed to retrieve jobs from West US.")
 
-# Run the migration functions
 migrate_notebooks()
 migrate_jobs()
