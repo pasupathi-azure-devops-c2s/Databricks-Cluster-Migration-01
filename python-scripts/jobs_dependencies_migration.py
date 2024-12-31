@@ -38,4 +38,3 @@ def migrate_jobs(west_us_workspace_url, west_us_workspace_token, west_us_2_works
     else:
         print("Failed to retrieve jobs from West US.")
 
-migrate_jobs()
